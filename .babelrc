@@ -1,24 +1,50 @@
 {
-	"env": {
-		"development": {
-			"presets": ["next/babel"],
-			"plugins": [
+  "env": {
+    "development": {
+      "presets": ["next/babel", "@babel/preset-typescript"],
+      "plugins": [
+        [
+          "module-resolver",
+          {
+            "root": ["./"],
+            "alias": {
+              "@components": "./src/components",
+              "@utils": "./src/utils",
+              "@layout": "./src/layout",
+              "@styles/*": "./src/styles/*"
+            }
+          }
+        ]
+      ]
+    },
+    "production": {
+      "presets": ["next/babel", "@babel/preset-typescript"],
+      "plugins": [
+        [
+          "module-resolver",
+          {
+            "root": ["./"],
+            "alias": {
+              "@components": "./src/components",
+              "@utils": "./src/utils",
+              "@layout": "./src/layout",
+              "@styles/*": "./src/styles/*"
+            }
+          }
+        ]
+      ]
+    },
+    "test": {
+			"presets": [
 				[
-					"module-resolver",
+					"next/babel",
 					{
-						"root": ["./"],
-						"alias": {
-							"@components": "./src/components",
-							"@utils": "./src/utils",
-							"@layout": "./src/layout",
-							"@styles/*": "./src/styles/*"
+						"preset-env": {
+							"modules": "commonjs"
 						}
 					}
 				]
-			]
-		},
-		"production": {
-			"presets": ["next/babel"],
+			],
 			"plugins": [
 				[
 					"module-resolver",
@@ -26,13 +52,15 @@
 						"root": ["./"],
 						"alias": {
 							"@components": "./src/components",
-							"@utils": "./src/utils",
-							"@layout": "./src/layout",
-							"@styles/*": "./src/styles/*"
+							"@containers": "./src/containers",
+							"@common": "./src/common",
+							"@state": "./src/state",
+							"@store": "./src/store",
+							"@utils": "./src/utils"
 						}
 					}
 				]
 			]
 		}
-	}
+  }
 }

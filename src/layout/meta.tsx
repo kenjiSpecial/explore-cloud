@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { Config } from '@utils/Config';
 import { NextSeo } from 'next-seo';
 import Head from 'next/head';
@@ -9,7 +9,7 @@ type IMetaProps = {
   canonical?: string;
 };
 
-const Meta = (props: IMetaProps) => (
+const Meta:FunctionComponent<IMetaProps> = (props: IMetaProps) => (
   <>
     <Head>
       <meta charSet="UTF-8" />

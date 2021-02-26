@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { Main } from '@components/main';
 import { Meta } from '@layout/meta';
+import Link from 'next/link';
 
 const Index: FunctionComponent = () => (
   <Main
@@ -11,15 +12,13 @@ const Index: FunctionComponent = () => (
       />
     )}
   >
-    <a href="https://github.com/ixartz/Next-js-Boilerplate">
-      <img
-        src={`${process.env.baseUrl}/assets/images/nextjs-starter-banner.png`}
-        alt="Nextjs starter banner"
-      />
-    </a>
-    <h1 className="font-bold text-2xl">
-      Boilerplate code for your Nextjs project with Tailwind CSS
-    </h1>
+    <div className="relative py-16 bg-white overflow-hidden">
+      <h1><a href="">FaunaDB</a></h1>
+      <ul>
+        <li><Link href="/fauna/signin">SignUp</Link></li>
+        <li><Link href="/fauna/blog">blog</Link></li>
+      </ul>
+    </div>
   </Main>
 );
 

@@ -46,9 +46,9 @@ const Main = (props: IMainProps) => (
         </div>
       </div>
 
-      <div className="py-5 text-xl content">{props.children}</div>
+      <div className="py-12 text-xl content">{props.children}</div>
 
-      <div className="border-t border-gray-300 text-center py-8 text-sm" />
+      <div className="border-t border-gray-300 text-center py-12 text-sm" />
     </div>
   </div>
 );
