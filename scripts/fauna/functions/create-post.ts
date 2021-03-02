@@ -8,6 +8,6 @@ export function createPost(post: faunadb.Expr) {
         data: { post, account: q.Var('identity') },
       }),
     },
-    q.Select(['ref'], q.Var('post')),
+    q.Var('post'),
   );
 }

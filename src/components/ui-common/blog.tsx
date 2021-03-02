@@ -1,33 +1,46 @@
 import React, { FunctionComponent } from 'react';
-import { faunaCreatePostAction } from '@utils/fauna-action';
+import { FPost } from '@utils/fauna-action';
 import { Editor, EditorState } from 'draft-js';
-import { Client } from 'faunadb';
 
-export const Blog: FunctionComponent<{ client?: Client; postsEl?: JSX.Element }> = (props: {
-  client?: Client;
+/**
+ *
+ */
+function generateID() {
+  // Math.random should be unique because of its seeding algorithm.
+  // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+  // after the decimal.
+  return Math.random().toString(36).substr(2, 9);
+}
+
+export const Blog: FunctionComponent<{
   postsEl?: JSX.Element;
+  postFunc?: (val: { id: string; text: string }[]) => Promise<any>;
+  callback?: (val: FPost) => void;
+}> = (props: {
+  postsEl?: JSX.Element;
+  postFunc?: (val: { id: string; text: string }[]) => Promise<any>;
+  callback?: (val: FPost) => void;
 }) => {
   const [editorState, setEditorState] = React.useState(() => EditorState.createEmpty());
-  //
+
   const onChange = (val: EditorState) => setEditorState(val);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (!client) return;
-  //     console.log(client);
-  //     const initPosts = await faunaGetPostsAction(client);
-  //     setPosts(initPosts);
-  //   })();
-  // }, [client]);
-
   function onClickHandler(event: React.FormEvent<HTMLButtonElement>) {
-    const contentState = editorState.getCurrentContent();
-    const textArr = contentState.getBlocksAsArray().map((block) => block.getText());
-    if (props.client) {
-      faunaCreatePostAction(props.client, textArr);
-    }
-
     event.preventDefault();
+    (async () => {
+      const contentState = editorState.getCurrentContent();
+      const textArr = contentState.getBlocksAsArray().map((block) => ({
+        id: generateID(),
+        text: block.getText(),
+      }));
+      if (props.postFunc) {
+        const res = await props.postFunc(textArr);
+        setEditorState(EditorState.createEmpty());
+        if (props.callback) {
+          props.callback(res);
+        }
+      }
+    })();
   }
 
   return (

@@ -4,14 +4,28 @@ import React, {
 import { Blog } from '@components/ui-common/blog';
 import { SignInAndUp } from '@components/ui-common/sign-in-and-up';
 import {
-  faunaGetPostsAction, faunaSignInAction, FPost, isSignIn,
+  faunaCreatePostAction,
+  faunaGetPostsAction,
+  faunaSignInAction,
+  FPost,
+  isSignIn,
 } from '@utils/fauna-action';
 import { Client } from 'faunadb';
 
 function faunaPostToElement(posts: FPost[]) {
-  const postEl = posts.map((post) => {
-    const postTextEl = post.data.post.map((val) => <p>{val}</p>);
-    return <li key={post.ref.id}>{postTextEl}</li>;
+  const postEl = posts.reverse().map((post) => {
+    const postTextEl = post.data.post.map((val) => <p key={`${val.id}`}>{val.text}</p>);
+    const ts = new Date(Math.floor(post.ts / 1000));
+    const date = `${ts.getFullYear()}.${
+      ts.getMonth() + 1
+    }.${ts.getDate()} ${ts.getHours()}:${ts.getMinutes()}`;
+
+    return (
+      <li className="my-4" key={post.ref.id}>
+        <div className="text-xs">{date}</div>
+        <div className="text-base">{postTextEl}</div>
+      </li>
+    );
   });
   return <ul>{postEl}</ul>;
 }
@@ -26,7 +40,6 @@ const SignIn: FunctionComponent = () => {
   const postsEl = useMemo(() => faunaPostToElement(posts), [posts]);
 
   const onCallback = (val: any) => {
-    // console.log({ val });
     if (isSignIn(val)) {
       setIsError(false);
       setIsLogin(true);
@@ -42,9 +55,23 @@ const SignIn: FunctionComponent = () => {
     }
   }, [client]);
 
+  function postFunc(post: { id: string; text: string }[]) {
+    if (!client) {
+      return new Promise((resolve) => {
+        resolve(123);
+      });
+    }
+    const res = faunaCreatePostAction(client, post);
+    return res;
+  }
+
+  function callback(res: FPost) {
+    setPosts([...posts, res]);
+  }
+
   return (
     <>
-      {isLogin && <Blog client={client} postsEl={postsEl} />}
+      {isLogin && <Blog postsEl={postsEl} postFunc={postFunc} callback={callback} />}
       {!isLogin && (
         <SignInAndUp
           titleText="Sign in to your account"

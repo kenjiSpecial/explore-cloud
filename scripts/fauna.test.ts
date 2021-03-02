@@ -56,16 +56,16 @@ it('signin user', async () => {
 });
 
 it('create the new post', async () => {
-  const ref = await faunaCreatePostAction(aClient, ['k']);
-  expect(isString(ref.id)).toBe(true);
-  refArr.push(ref);
+  const res = await faunaCreatePostAction(aClient, [{ id: '1', text: 'k' }]);
+  expect(isString(res.ref.id)).toBe(true);
+  refArr.push(res.ref);
 });
 
 it('get posts', async () => {
   const res = await faunaGetPostsAction(aClient);
 
   expect(res.length).toBe(1);
-  expect(typeof res[0].data.post[0]).toBe('string');
+  expect(typeof res[0].data.post[0].text).toBe('string');
 });
 
 afterAll(async () => {

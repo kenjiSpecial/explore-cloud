@@ -19,7 +19,7 @@ export type FPost = {
   ref: values.Ref;
   ts: number;
   data: {
-    post: string[];
+    post: { id: string; text: string }[];
     account: values.Ref;
   };
 };
@@ -42,8 +42,12 @@ export function isRef(obj: unknown): obj is values.Ref {
   return obj != null && typeof (obj as values.Ref).id === 'string';
 }
 
-export function isFPost(obj: unknown): obj is FPost[] {
+export function isFPostArray(obj: unknown): obj is FPost[] {
   return obj != null && Array.isArray(obj);
+}
+
+export function isFPost(obj: unknown): obj is FPost {
+  return obj != null && Array.isArray((obj as FPost).data.post);
 }
 
 // function
@@ -67,10 +71,10 @@ export async function faunaSignInAction(client: Client, email: string, password:
   return res;
 }
 
-export async function faunaCreatePostAction(client: Client, post: string[]) {
+export async function faunaCreatePostAction(client: Client, post: { id: string; text: string }[]) {
   const res: unknown = await client.query(q.Call(q.Function(CREATE_POST), [post]));
 
-  if (!isRef(res)) {
+  if (!isFPost(res)) {
     throw new TypeError('Received malformed createPost API response');
   }
 
@@ -79,7 +83,7 @@ export async function faunaCreatePostAction(client: Client, post: string[]) {
 
 export async function faunaGetPostsAction(client: Client) {
   const res: unknown = await client.query(q.Call(q.Function(GET_POSTS)));
-  if (!isFPost(res)) {
+  if (!isFPostArray(res)) {
     throw new TypeError(`Received malformed ${GET_POSTS} API response`);
   }
 
