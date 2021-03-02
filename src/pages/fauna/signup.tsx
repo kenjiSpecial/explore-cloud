@@ -8,6 +8,7 @@ const SignUp: FunctionComponent = () => (
     buttonName="Sign Up"
     signAction={faunaSignUpAction}
     isModal
+    isError={false}
   />
 );
 

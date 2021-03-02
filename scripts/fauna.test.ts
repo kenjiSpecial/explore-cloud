@@ -1,10 +1,17 @@
 import * as dotenv from 'dotenv';
 import faunadb, { query as q } from 'faunadb';
-import { faunaSignInAction, faunaSignUpAction } from '../src/utils/fauna-action';
+import {
+  faunaSignInAction,
+  faunaSignUpAction,
+  faunaCreatePostAction,
+  isString,
+  faunaGetPostsAction,
+} from '../src/utils/fauna-action';
 
 dotenv.config({ path: '.env.local' });
 
 let client: faunadb.Client;
+let aClient: faunadb.Client;
 const refArr: faunadb.values.Ref[] = [];
 
 beforeAll(async () => {
@@ -18,6 +25,10 @@ beforeAll(async () => {
       email: string;
     };
   };
+
+  const res = (await faunaSignInAction(client, 'hoge@hoge.hoge', 'foofoo')) as { secret: string };
+  aClient = new faunadb.Client({ secret: res.secret });
+
   refArr.push(ref);
 });
 
@@ -35,13 +46,26 @@ it('signup user', async () => {
 });
 
 it('signin user', async () => {
-  const resA = (await faunaSignInAction(client, 'hoge@hoge.hoge', 'foofoo'));
+  const resA = await faunaSignInAction(client, 'hoge@hoge.hoge', 'foofoo');
   if (typeof resA !== 'boolean') {
     expect(typeof resA.secret).toBe('string');
   }
 
-  const resB = (await faunaSignInAction(client, 'hogehoge@hoge.hoge', 'foofoo'));
+  const resB = await faunaSignInAction(client, 'hogehoge@hoge.hoge', 'foofoo');
   expect(typeof resB).toBe('boolean');
+});
+
+it('create the new post', async () => {
+  const ref = await faunaCreatePostAction(aClient, ['k']);
+  expect(isString(ref.id)).toBe(true);
+  refArr.push(ref);
+});
+
+it('get posts', async () => {
+  const res = await faunaGetPostsAction(aClient);
+
+  expect(res.length).toBe(1);
+  expect(typeof res[0].data.post[0]).toBe('string');
 });
 
 afterAll(async () => {

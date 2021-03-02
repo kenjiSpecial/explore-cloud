@@ -8,12 +8,15 @@ export const SignInAndUp: FunctionComponent<{
   buttonName: string;
   signAction: (client: Client, email: string, password: string) => Promise<Object>;
   isModal: boolean;
+  isError: boolean;
+  callback?: (val: any) => void;
 }> = (props: {
   titleText: string;
   buttonName: string;
   signAction: (client: Client, email: string, password: string) => Promise<Object>;
   isModal: boolean;
-  callback?: () => void;
+  isError: boolean;
+  callback?: (val: any) => void;
 }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -29,13 +32,13 @@ export const SignInAndUp: FunctionComponent<{
   const onClickHandler = (event: React.MouseEvent<HTMLElement>) => {
     props
       .signAction(client, username, password)
-      .then(() => {
+      .then((val) => {
         if (props.isModal) {
           setIsOpen(true);
         }
 
         if (props.callback) {
-          props.callback();
+          props.callback(val);
         }
       })
       .catch((e) => {
@@ -49,8 +52,45 @@ export const SignInAndUp: FunctionComponent<{
     setIsOpen(false);
   };
 
+  const ErrorMessage = (
+    <Transition
+      show={props.isError}
+      enter="ease-out duration-300"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="ease-in duration-200"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+      className="absolute w-full rounded-md bg-red-50 p-4"
+    >
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <svg
+            className="h-5 w-5 text-red-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </div>
+        <div className="ml-3">
+          <h3 className="text-base font-medium text-red-800">
+            メールかパスワードが間違っています。
+          </h3>
+        </div>
+      </div>
+    </Transition>
+  );
+
   return (
     <>
+      {ErrorMessage}
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <svg

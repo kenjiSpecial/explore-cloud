@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/comma-dangle */
 import faunadb, { query as q } from 'faunadb';
 
 export function signin(email: faunadb.Expr, password: faunadb.Expr) {
@@ -12,8 +11,8 @@ export function signin(email: faunadb.Expr, password: faunadb.Expr) {
         account: q.Get(q.Select(['instance'], q.Var('res'))),
         secret: q.Select(['secret'], q.Var('res')),
       },
-      { account: q.Var('account'), secret: q.Var('secret') }
+      { account: q.Var('account'), secret: q.Var('secret') },
     ),
-    false
+    false,
   );
 }

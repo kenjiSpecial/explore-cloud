@@ -9,7 +9,7 @@ type IMetaProps = {
   canonical?: string;
 };
 
-const Meta:FunctionComponent<IMetaProps> = (props: IMetaProps) => (
+const Meta: FunctionComponent<IMetaProps> = (props: IMetaProps) => (
   <>
     <Head>
       <meta charSet="UTF-8" />

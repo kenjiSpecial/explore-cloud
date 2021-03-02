@@ -13,10 +13,16 @@ const Index: FunctionComponent = () => (
     )}
   >
     <div className="relative py-16 bg-white overflow-hidden">
-      <h1><a href="">FaunaDB</a></h1>
+      <h1>
+        <a href="">FaunaDB</a>
+      </h1>
       <ul>
-        <li><Link href="/fauna/signin">SignUp</Link></li>
-        <li><Link href="/fauna/blog">blog</Link></li>
+        <li>
+          <Link href="/fauna/signup">SignUp</Link>
+        </li>
+        <li>
+          <Link href="/fauna/blog">blog</Link>
+        </li>
       </ul>
     </div>
   </Main>
