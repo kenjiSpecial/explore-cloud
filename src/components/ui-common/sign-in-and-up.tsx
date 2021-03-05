@@ -1,55 +1,47 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { Transition } from '@headlessui/react';
-import { client } from '@utils/init-fauna';
-import { Client } from 'faunadb';
 
 export const SignInAndUp: FunctionComponent<{
   titleText: string;
   buttonName: string;
-  signAction: (client: Client, email: string, password: string) => Promise<Object>;
-  isModal: boolean;
   isError: boolean;
-  callback?: (val: any) => void;
+  isOpen?: boolean;
+  username: string;
+  password: string;
+  setUsername: (val: string) => void;
+  setPassword: (val: string) => void;
+  setIsOpen?: (val: boolean) => void;
+  clickHandler: () => void;
 }> = (props: {
   titleText: string;
   buttonName: string;
-  signAction: (client: Client, email: string, password: string) => Promise<Object>;
-  isModal: boolean;
   isError: boolean;
-  callback?: (val: any) => void;
+  isOpen?: boolean;
+  username: string;
+  password: string;
+  setUsername: (val: string) => void;
+  setPassword: (val: string) => void;
+  setIsOpen?: (val: boolean) => void;
+  clickHandler: () => void;
 }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, username, password } = props;
   const onChangeUsernameHandler = (event: React.FormEvent<HTMLInputElement>) => {
-    setUsername(event.currentTarget.value as string);
+    props.setUsername(event.currentTarget.value as string);
   };
 
   const onChangePasswordHandler = (event: React.FormEvent<HTMLInputElement>) => {
-    setPassword(event.currentTarget.value as string);
+    props.setPassword(event.currentTarget.value as string);
   };
 
   const onClickHandler = (event: React.MouseEvent<HTMLElement>) => {
-    props
-      .signAction(client, username, password)
-      .then((val) => {
-        if (props.isModal) {
-          setIsOpen(true);
-        }
-
-        if (props.callback) {
-          props.callback(val);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-
     event.preventDefault();
+    props.clickHandler();
   };
 
   const onCloseHandler = () => {
-    setIsOpen(false);
+    if (props.setIsOpen) {
+      props.setIsOpen(false);
+    }
   };
 
   const ErrorMessage = (
@@ -164,7 +156,7 @@ export const SignInAndUp: FunctionComponent<{
       <div className={`${isOpen ? 'visible' : 'invisible'} fixed z-10 inset-0 overflow-y-auto`}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition
-            show={isOpen}
+            show={isOpen || false}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -181,7 +173,7 @@ export const SignInAndUp: FunctionComponent<{
             </span>
 
             <Transition
-              show={isOpen}
+              show={isOpen || false}
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               enterTo="opacity-100 translate-y-0 sm:scale-100"

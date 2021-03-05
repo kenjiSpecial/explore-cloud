@@ -10,6 +10,7 @@ import {
   FPost,
   isSignIn,
 } from '@utils/fauna-action';
+import { client as adminClient } from '@utils/init-fauna';
 import { Client } from 'faunadb';
 
 function faunaPostToElement(posts: FPost[]) {
@@ -38,16 +39,8 @@ const SignIn: FunctionComponent = () => {
   const [client, setClient] = useState<Client>();
   const [posts, setPosts] = useState<FPost[]>([]);
   const postsEl = useMemo(() => faunaPostToElement(posts), [posts]);
-
-  const onCallback = (val: any) => {
-    if (isSignIn(val)) {
-      setIsError(false);
-      setIsLogin(true);
-      setClient(new Client({ secret: val.secret }));
-    } else {
-      setIsError(true);
-    }
-  };
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     if (client) {
@@ -69,6 +62,22 @@ const SignIn: FunctionComponent = () => {
     setPosts([...posts, res]);
   }
 
+  const clickHandler = () => {
+    faunaSignInAction(adminClient, username, password)
+      .then((val) => {
+        if (isSignIn(val)) {
+          setIsError(false);
+          setIsLogin(true);
+          setClient(new Client({ secret: val.secret }));
+        } else {
+          setIsError(true);
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+
   return (
     <>
       {isLogin && <Blog postsEl={postsEl} postFunc={postFunc} callback={callback} />}
@@ -76,10 +85,12 @@ const SignIn: FunctionComponent = () => {
         <SignInAndUp
           titleText="Sign in to your account"
           buttonName="Sign In"
-          signAction={faunaSignInAction}
-          isModal={false}
-          callback={onCallback}
           isError={isError}
+          username={username}
+          password={password}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          clickHandler={clickHandler}
         />
       )}
     </>

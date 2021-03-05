@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import { SignInAndUp } from '@components/ui-common/sign-in-and-up';
-import { faunaSignUpAction } from '@utils/fauna-action';
-import { client } from '@utils/init-fauna';
+import { supabase } from '@utils/init-supabase';
 
 const SignUp: FunctionComponent = () => {
   const [username, setUsername] = useState('');
@@ -9,18 +8,23 @@ const SignUp: FunctionComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const clickHandler = () => {
-    faunaSignUpAction(client, username, password)
-      .then(() => {
-        setIsOpen(true);
-      })
-      .catch((e) => {
-        console.error(e);
+    (async () => {
+      const { user, error } = await supabase.auth.signUp({
+        email: username,
+        password,
       });
+
+      if (user) {
+        setIsOpen(true);
+      } else {
+        console.error(error);
+      }
+    })();
   };
 
   return (
     <SignInAndUp
-      titleText="Sign up to your account in FaunaDB"
+      titleText="Sign up to your account in supabase database"
       buttonName="Sign Up"
       isError={false}
       isOpen={isOpen}

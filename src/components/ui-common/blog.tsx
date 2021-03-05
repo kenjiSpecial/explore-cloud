@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { FPost } from '@utils/fauna-action';
 import { Editor, EditorState } from 'draft-js';
 
 /**
@@ -14,12 +13,16 @@ function generateID() {
 
 export const Blog: FunctionComponent<{
   postsEl?: JSX.Element;
-  postFunc?: (val: { id: string; text: string }[]) => Promise<any>;
-  callback?: (val: FPost) => void;
+  postFunc?: (
+    val: { id: string; text: string }[]
+  ) => Promise<any> | PromiseLike<any>;
+  callback?: (val: any) => void;
 }> = (props: {
   postsEl?: JSX.Element;
-  postFunc?: (val: { id: string; text: string }[]) => Promise<any>;
-  callback?: (val: FPost) => void;
+  postFunc?: (
+    val: { id: string; text: string }[]
+  ) => Promise<any> | PromiseLike<any>;
+  callback?: (val: any) => void;
 }) => {
   const [editorState, setEditorState] = React.useState(() => EditorState.createEmpty());
 
